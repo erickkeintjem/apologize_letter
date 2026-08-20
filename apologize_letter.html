@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Maaf</title>
+
+  <style>
+    :root {
+      --bg1: #fdf6ee;
+      --bg2: #f7e9dd;
+      --accent: #e08e79;
+      --accent-dark: #c96f5c;
+      --text: #4a3f3a;
+      --card: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+      padding: 24px;
+    }
+
+    /* ===== ELEMEN MENGAMBANG DI LATAR ===== */
+
+    .float {
+      position: fixed;
+      top: -40px;
+      font-size: 24px;
+      opacity: 0.7;
+      animation-name: fall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* ===== KARTU UTAMA ===== */
+
+    .card {
+      background: var(--card);
+      max-width: 520px;
+      width: 100%;
+      border-radius: 20px;
+      padding: 40px 32px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 2;
+      animation: cardIn 0.9s ease-out;
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .icon {
+      font-size: 54px;
+      margin-bottom: 8px;
+      display: inline-block;
+      animation: bounce 2.2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    h1 {
+      color: var(--accent-dark);
+      font-size: 26px;
+      margin: 8px 0 4px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease-out 0.3s forwards;
+    }
+
+    .subtitle {
+      color: #a08c86;
+      font-size: 14px;
+      margin-bottom: 22px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease-out 0.5s forwards;
+    }
+
+    .message {
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.7;
+      text-align: left;
+      background: var(--bg1);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 22px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease-out 0.7s forwards;
+      white-space: pre-line;
+    }
+
+    .signature {
+      font-style: italic;
+      color: #a08c86;
+      font-size: 14px;
+      margin-bottom: 26px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease-out 0.9s forwards;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s ease-out 1.1s forwards;
+    }
+
+    button {
+      border: none;
+      padding: 13px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #btn-maaf {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(224, 142, 121, 0.4);
+    }
+
+    #btn-maaf:hover {
+      transform: translateY(-2px) scale(1.03);
+    }
+
+    #btn-marah {
+      background: transparent;
+      color: #a08c86;
+      border: 1px solid #e3d5cd;
+    }
+
+    #btn-marah:hover {
+      background: #f4ebe4;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== HASIL SETELAH TOMBOL DIKLIK ===== */
+
+    .result {
+      display: none;
+      font-size: 16px;
+      color: var(--accent-dark);
+      margin-top: 6px;
+      animation: fadeUp 0.6s ease-out forwards;
+    }
+
+    .result.show {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+
+    <div class="icon">🌸</div>
+
+    <h1 id="judul"></h1>
+
+    <div class="subtitle" id="subjudul"></div>
+
+    <div class="message" id="isiPesan"></div>
+
+    <div class="signature" id="tandaTangan"></div>
+
+    <div class="buttons" id="areaTombol">
+      <button id="btn-maaf"></button>
+      <button id="btn-marah"></button>
+    </div>
+
+    <div class="result" id="hasil"></div>
+
+    <div class="result" id="godaan"></div>
+
+  </div>
+
+
+  <script>
+
+    /* =========================================================
+       KONFIGURASI WEBSITE
+    ========================================================= */
+
+    const TEKS = {
+
+      judul: "Maaf ya",
+
+      subjudul: "aku cuma mau bilang ini",
+
+      isiPesan: `Halo Adel,
+
+Kak minta maaf banget yaa, karna kak balas chat singkat begitu kayak nda niat, karna kak ada kejar deadline project soalnya jadi kak cuma balas singkat bagitu.
+
+Kak minta maaf yaa, kak nda akan bagitu lagi. Kak juga minta maaf kak nda sengaja unfollow Adel pe akun Tiktok, kak betulan nda sengaja pencet itu "Teman" kak kira itu buat kase tunjung dang Adel p teman' di Tiktok itu ada sapa'.
+
+Nentau ternyata itu beking ke unfollow, kak mintaa maaff yaa dan kalo Adel mau, tolong accept kak p permintaan following di Tiktok ulangg.`,
+
+      tandaTangan: "— dari [Kak Erick (Just Friendmu🙂)]",
+
+      tombolMaaf: "Aku maafin kok 🌷",
+
+      tombolMarah: "Gak mau",
+
+      godaan1: "Adel yakin nda mau maafin kak?",
+
+      godaan2: "Adel beneran yakin? 😢",
+
+      balasanMaaf:
+        "Makasih yaa, mau maafin kak. Kak janji nda akan coba' bagitu lagi😊",
+
+      balasanMarah:
+        "Nggak apa-apa, aku ngerti. Aku tunggu sampai kamu siap ya. :) ",
+
+      /*
+        TOPIC NTFY
+      */
+
+      ntfyTopic: "permintaan-maaf"
+
+    };
+
+
+    /* =========================================================
+       MASUKKAN TEKS KE WEBSITE
+    ========================================================= */
+
+    document.getElementById('judul').textContent =
+      TEKS.judul;
+
+    document.getElementById('subjudul').textContent =
+      TEKS.subjudul;
+
+    document.getElementById('isiPesan').textContent =
+      TEKS.isiPesan;
+
+    document.getElementById('tandaTangan').textContent =
+      TEKS.tandaTangan;
+
+    document.getElementById('btn-maaf').textContent =
+      TEKS.tombolMaaf;
+
+    document.getElementById('btn-marah').textContent =
+      TEKS.tombolMarah;
+
+
+    /* =========================================================
+       ELEMEN MENGAMBANG
+    ========================================================= */
+
+    const simbol = ['🌸', '🌷', '🍃', '✨'];
+
+    for (let i = 0; i < 18; i++) {
+
+      const el = document.createElement('div');
+
+      el.className = 'float';
+
+      el.textContent =
+        simbol[Math.floor(Math.random() * simbol.length)];
+
+      el.style.left =
+        Math.random() * 100 + 'vw';
+
+      el.style.animationDuration =
+        (6 + Math.random() * 6) + 's';
+
+      el.style.animationDelay =
+        (Math.random() * 8) + 's';
+
+      el.style.fontSize =
+        (16 + Math.random() * 16) + 'px';
+
+      document.body.appendChild(el);
+    }
+
+
+    /* =========================================================
+       NTFY PUSH NOTIFICATION
+    ========================================================= */
+
+    async function kirimNotifikasiNtfy(judul, pesan, tag) {
+
+      try {
+
+        const response = await fetch(
+          `https://ntfy.sh/${TEKS.ntfyTopic}`,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "text/plain",
+              "Title": judul,
+              "Priority": "high",
+              "Tags": tag
+            },
+
+            body: pesan
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "Server ntfy tidak merespons dengan sukses"
+          );
+        }
+
+        console.log(
+          "Notifikasi berhasil dikirim ke ntfy"
+        );
+
+        return true;
+
+      } catch (error) {
+
+        console.error(
+          "Gagal mengirim notifikasi:",
+          error
+        );
+
+        return false;
+      }
+    }
+
+
+    /* =========================================================
+       VARIABEL ELEMEN
+    ========================================================= */
+
+    const hasil =
+      document.getElementById('hasil');
+
+    const areaTombol =
+      document.getElementById('areaTombol');
+
+    const btnMaaf =
+      document.getElementById('btn-maaf');
+
+    const btnMarah =
+      document.getElementById('btn-marah');
+
+    const godaan =
+      document.getElementById('godaan');
+
+    let percobaan = 0;
+
+
+    /* =========================================================
+       TOMBOL "AKU MAAFIN KOK"
+    ========================================================= */
+
+    btnMaaf.addEventListener('click', async () => {
+
+      const waktu =
+        new Date().toLocaleString("id-ID", {
+          dateStyle: "full",
+          timeStyle: "medium"
+        });
+
+
+      /* Kirim notifikasi ke HP Kak Erick */
+
+      await kirimNotifikasiNtfy(
+
+        "🌸 Adel sudah memaafkanmu!",
+
+        `Adel baru saja menekan tombol:
+
+"Aku maafin kok 🌷"
+
+Waktu:
+${waktu}
+
+Website:
+Permintaan Maaf dari Kak Erick`,
+
+        "heart,white_check_mark"
+      );
+
+
+      /* Tampilkan hasil */
+
+      areaTombol.style.display = 'none';
+
+      hasil.textContent =
+        TEKS.balasanMaaf;
+
+      hasil.classList.add('show');
+    });
+
+
+    /* =========================================================
+       TOMBOL "GAK MAU" KABUR
+    ========================================================= */
+
+    btnMarah.style.position = 'relative';
+
+    btnMarah.style.transition =
+      'transform 0.25s ease';
+
+
+    function kaburkanTombol() {
+
+      const batasX = 90;
+
+      const batasY = 34;
+
+      const x =
+        (Math.random() - 0.5) * 2 * batasX;
+
+      const y =
+        (Math.random() - 0.5) * 2 * batasY;
+
+      btnMarah.style.transform =
+        `translate(${x}px, ${y}px)`;
+    }
+
+
+    /* Kabur saat didekati mouse */
+
+    btnMarah.addEventListener(
+      'mouseenter',
+      kaburkanTombol
+    );
+
+    btnMarah.addEventListener(
+      'mousemove',
+      kaburkanTombol
+    );
+
+
+    /* Kabur saat disentuh di HP */
+
+    btnMarah.addEventListener(
+      'touchstart',
+      (e) => {
+
+        e.preventDefault();
+
+        kaburkanTombol();
+
+      },
+      {
+        passive: false
+      }
+    );
+
+
+    /* =========================================================
+       JIKA TOMBOL "GAK MAU" BERHASIL DIKLIK
+    ========================================================= */
+
+    btnMarah.addEventListener(
+      'click',
+      async (e) => {
+
+        e.preventDefault();
+
+        percobaan++;
+
+        kaburkanTombol();
+
+
+        if (percobaan === 1) {
+
+          godaan.textContent =
+            TEKS.godaan1;
+
+          godaan.classList.add('show');
+
+        }
+
+
+        else if (percobaan === 2) {
+
+          godaan.textContent =
+            TEKS.godaan2;
+
+          godaan.classList.add('show');
+
+        }
+
+
+        else {
+
+          const waktu =
+            new Date().toLocaleString("id-ID", {
+              dateStyle: "full",
+              timeStyle: "medium"
+            });
+
+
+          /* Kirim notifikasi ke HP Kak Erick */
+
+          await kirimNotifikasiNtfy(
+
+            "😢 Adel masih belum memaafkanmu",
+
+            `Adel akhirnya berhasil menekan:
+
+"Gak mau"
+
+Waktu:
+${waktu}
+
+Status:
+Adel masih membutuhkan waktu.`,
+
+            "crying_face"
+          );
+
+
+          /* Tampilkan hasil */
+
+          godaan.classList.remove('show');
+
+          areaTombol.style.display = 'none';
+
+          hasil.textContent =
+            TEKS.balasanMarah;
+
+          hasil.classList.add('show');
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+
+</html>
