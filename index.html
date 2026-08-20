@@ -24,7 +24,7 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(180deg, var(--bg1), var(--bg2));
       display: flex;
       align-items: center;
@@ -34,7 +34,7 @@
       padding: 24px;
     }
 
-    /* ===== ELEMEN MENGAMBANG DI LATAR ===== */
+    /* ===== ELEMEN MENGAMBANG ===== */
 
     .float {
       position: fixed;
@@ -64,7 +64,7 @@
       }
     }
 
-    /* ===== KARTU UTAMA ===== */
+    /* ===== KARTU ===== */
 
     .card {
       background: var(--card);
@@ -168,7 +168,7 @@
 
     #btn-maaf {
       background: var(--accent);
-      color: #fff;
+      color: #ffffff;
       box-shadow: 0 8px 20px rgba(224, 142, 121, 0.4);
     }
 
@@ -198,7 +198,7 @@
       }
     }
 
-    /* ===== HASIL SETELAH TOMBOL DIKLIK ===== */
+    /* ===== HASIL ===== */
 
     .result {
       display: none;
@@ -243,7 +243,7 @@
   <script>
 
     /* =========================================================
-       KONFIGURASI WEBSITE
+       KONFIGURASI
     ========================================================= */
 
     const TEKS = {
@@ -277,8 +277,9 @@ Nentau ternyata itu beking ke unfollow, kak mintaa maaff yaa dan kalo Adel mau, 
         "Nggak apa-apa, aku ngerti. Aku tunggu sampai kamu siap ya. :) ",
 
       /*
-        TOPIC NTFY
-      */
+       * TOPIC NTFY
+       * Harus sama dengan topic yang kamu subscribe di aplikasi ntfy.
+       */
 
       ntfyTopic: "permintaan-maaf"
 
@@ -286,25 +287,25 @@ Nentau ternyata itu beking ke unfollow, kak mintaa maaff yaa dan kalo Adel mau, 
 
 
     /* =========================================================
-       MASUKKAN TEKS KE WEBSITE
+       MASUKKAN TEKS
     ========================================================= */
 
-    document.getElementById('judul').textContent =
+    document.getElementById("judul").textContent =
       TEKS.judul;
 
-    document.getElementById('subjudul').textContent =
+    document.getElementById("subjudul").textContent =
       TEKS.subjudul;
 
-    document.getElementById('isiPesan').textContent =
+    document.getElementById("isiPesan").textContent =
       TEKS.isiPesan;
 
-    document.getElementById('tandaTangan').textContent =
+    document.getElementById("tandaTangan").textContent =
       TEKS.tandaTangan;
 
-    document.getElementById('btn-maaf').textContent =
+    document.getElementById("btn-maaf").textContent =
       TEKS.tombolMaaf;
 
-    document.getElementById('btn-marah').textContent =
+    document.getElementById("btn-marah").textContent =
       TEKS.tombolMarah;
 
 
@@ -312,65 +313,92 @@ Nentau ternyata itu beking ke unfollow, kak mintaa maaff yaa dan kalo Adel mau, 
        ELEMEN MENGAMBANG
     ========================================================= */
 
-    const simbol = ['🌸', '🌷', '🍃', '✨'];
+    const simbol = ["🌸", "🌷", "🍃", "✨"];
 
     for (let i = 0; i < 18; i++) {
 
-      const el = document.createElement('div');
+      const el = document.createElement("div");
 
-      el.className = 'float';
+      el.className = "float";
 
       el.textContent =
         simbol[Math.floor(Math.random() * simbol.length)];
 
       el.style.left =
-        Math.random() * 100 + 'vw';
+        Math.random() * 100 + "vw";
 
       el.style.animationDuration =
-        (6 + Math.random() * 6) + 's';
+        (6 + Math.random() * 6) + "s";
 
       el.style.animationDelay =
-        (Math.random() * 8) + 's';
+        (Math.random() * 8) + "s";
 
       el.style.fontSize =
-        (16 + Math.random() * 16) + 'px';
+        (16 + Math.random() * 16) + "px";
 
       document.body.appendChild(el);
     }
 
 
     /* =========================================================
-       NTFY PUSH NOTIFICATION
+       FUNGSI NTFY
     ========================================================= */
 
     async function kirimNotifikasiNtfy(judul, pesan, tag) {
 
       try {
 
+        /*
+         * Metadata dikirim melalui URL parameter.
+         */
+
+        const url = new URL(
+          `https://ntfy.sh/${TEKS.ntfyTopic}`
+        );
+
+        url.searchParams.set(
+          "title",
+          judul
+        );
+
+        url.searchParams.set(
+          "priority",
+          "high"
+        );
+
+        url.searchParams.set(
+          "tags",
+          tag
+        );
+
+
+        /*
+         * Pesan utama dikirim sebagai body.
+         */
+
         const response = await fetch(
-          `https://ntfy.sh/${TEKS.ntfyTopic}`,
+          url.toString(),
           {
             method: "POST",
-
             headers: {
-              "Content-Type": "text/plain",
-              "Title": judul,
-              "Priority": "high",
-              "Tags": tag
+              "Content-Type": "text/plain; charset=utf-8"
             },
-
             body: pesan
           }
         );
 
+
         if (!response.ok) {
+
           throw new Error(
-            "Server ntfy tidak merespons dengan sukses"
+            `HTTP Error: ${response.status}`
           );
+
         }
 
+
         console.log(
-          "Notifikasi berhasil dikirim ke ntfy"
+          "Notifikasi ntfy berhasil dikirim"
         );
 
         return true;
@@ -378,7 +406,7 @@ Nentau ternyata itu beking ke unfollow, kak mintaa maaff yaa dan kalo Adel mau, 
       } catch (error) {
 
         console.error(
-          "Gagal mengirim notifikasi:",
+          "Gagal mengirim notifikasi ntfy:",
           error
         );
 
@@ -392,75 +420,93 @@ Nentau ternyata itu beking ke unfollow, kak mintaa maaff yaa dan kalo Adel mau, 
     ========================================================= */
 
     const hasil =
-      document.getElementById('hasil');
+      document.getElementById("hasil");
 
     const areaTombol =
-      document.getElementById('areaTombol');
+      document.getElementById("areaTombol");
 
     const btnMaaf =
-      document.getElementById('btn-maaf');
+      document.getElementById("btn-maaf");
 
     const btnMarah =
-      document.getElementById('btn-marah');
+      document.getElementById("btn-marah");
 
     const godaan =
-      document.getElementById('godaan');
+      document.getElementById("godaan");
 
     let percobaan = 0;
 
 
     /* =========================================================
-       TOMBOL "AKU MAAFIN KOK"
+       TOMBOL MAAF
     ========================================================= */
 
-    btnMaaf.addEventListener('click', async () => {
+    btnMaaf.addEventListener(
+      "click",
+      async () => {
 
-      const waktu =
-        new Date().toLocaleString("id-ID", {
-          dateStyle: "full",
-          timeStyle: "medium"
-        });
+        const waktu =
+          new Date().toLocaleString(
+            "id-ID",
+            {
+              dateStyle: "full",
+              timeStyle: "medium"
+            }
+          );
 
 
-      /* Kirim notifikasi ke HP Kak Erick */
+        const pesanNtfy =
 
-      await kirimNotifikasiNtfy(
-
-        "🌸 Adel sudah memaafkanmu!",
-
-        `Adel baru saja menekan tombol:
+`Adel baru saja menekan tombol:
 
 "Aku maafin kok 🌷"
 
 Waktu:
 ${waktu}
 
-Website:
-Permintaan Maaf dari Kak Erick`,
-
-        "heart,white_check_mark"
-      );
+Status:
+Adel sudah memaafkanmu.`;
 
 
-      /* Tampilkan hasil */
+        await kirimNotifikasiNtfy(
 
-      areaTombol.style.display = 'none';
+          "🌸 Adel sudah memaafkanmu",
 
-      hasil.textContent =
-        TEKS.balasanMaaf;
+          pesanNtfy,
 
-      hasil.classList.add('show');
-    });
+          "heart"
+        );
+
+
+        /*
+         * Sembunyikan tombol
+         */
+
+        areaTombol.style.display = "none";
+
+
+        /*
+         * Tampilkan pesan balasan
+         */
+
+        hasil.textContent =
+          TEKS.balasanMaaf;
+
+        hasil.classList.add("show");
+
+      }
+    );
 
 
     /* =========================================================
-       TOMBOL "GAK MAU" KABUR
+       TOMBOL GAK MAU
     ========================================================= */
 
-    btnMarah.style.position = 'relative';
+    btnMarah.style.position =
+      "relative";
 
     btnMarah.style.transition =
-      'transform 0.25s ease';
+      "transform 0.25s ease";
 
 
     function kaburkanTombol() {
@@ -477,26 +523,26 @@ Permintaan Maaf dari Kak Erick`,
 
       btnMarah.style.transform =
         `translate(${x}px, ${y}px)`;
+
     }
 
 
-    /* Kabur saat didekati mouse */
+    /*
+     * Desktop
+     */
 
     btnMarah.addEventListener(
-      'mouseenter',
+      "mouseenter",
       kaburkanTombol
     );
 
-    btnMarah.addEventListener(
-      'mousemove',
-      kaburkanTombol
-    );
 
-
-    /* Kabur saat disentuh di HP */
+    /*
+     * Mobile
+     */
 
     btnMarah.addEventListener(
-      'touchstart',
+      "touchstart",
       (e) => {
 
         e.preventDefault();
@@ -511,11 +557,11 @@ Permintaan Maaf dari Kak Erick`,
 
 
     /* =========================================================
-       JIKA TOMBOL "GAK MAU" BERHASIL DIKLIK
+       JIKA TOMBOL GAK MAU BERHASIL DIKLIK
     ========================================================= */
 
     btnMarah.addEventListener(
-      'click',
+      "click",
       async (e) => {
 
         e.preventDefault();
@@ -525,42 +571,57 @@ Permintaan Maaf dari Kak Erick`,
         kaburkanTombol();
 
 
+        /*
+         * Percobaan pertama
+         */
+
         if (percobaan === 1) {
 
           godaan.textContent =
             TEKS.godaan1;
 
-          godaan.classList.add('show');
+          godaan.classList.add(
+            "show"
+          );
 
         }
 
+
+        /*
+         * Percobaan kedua
+         */
 
         else if (percobaan === 2) {
 
           godaan.textContent =
             TEKS.godaan2;
 
-          godaan.classList.add('show');
+          godaan.classList.add(
+            "show"
+          );
 
         }
 
 
+        /*
+         * Percobaan ketiga
+         */
+
         else {
 
           const waktu =
-            new Date().toLocaleString("id-ID", {
-              dateStyle: "full",
-              timeStyle: "medium"
-            });
+            new Date().toLocaleString(
+              "id-ID",
+              {
+                dateStyle: "full",
+                timeStyle: "medium"
+              }
+            );
 
 
-          /* Kirim notifikasi ke HP Kak Erick */
+          const pesanNtfy =
 
-          await kirimNotifikasiNtfy(
-
-            "😢 Adel masih belum memaafkanmu",
-
-            `Adel akhirnya berhasil menekan:
+`Adel akhirnya berhasil menekan:
 
 "Gak mau"
 
@@ -568,22 +629,47 @@ Waktu:
 ${waktu}
 
 Status:
-Adel masih membutuhkan waktu.`,
+Adel masih membutuhkan waktu.`;
+
+
+          await kirimNotifikasiNtfy(
+
+            "😢 Adel masih belum memaafkanmu",
+
+            pesanNtfy,
 
             "crying_face"
           );
 
 
-          /* Tampilkan hasil */
+          /*
+           * Sembunyikan godaan
+           */
 
-          godaan.classList.remove('show');
+          godaan.classList.remove(
+            "show"
+          );
 
-          areaTombol.style.display = 'none';
+
+          /*
+           * Sembunyikan tombol
+           */
+
+          areaTombol.style.display =
+            "none";
+
+
+          /*
+           * Tampilkan hasil
+           */
 
           hasil.textContent =
             TEKS.balasanMarah;
 
-          hasil.classList.add('show');
+          hasil.classList.add(
+            "show"
+          );
+
         }
 
       }
